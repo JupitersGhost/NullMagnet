@@ -15,7 +15,7 @@ A primary feature of NullMagnet is its ability to ingest entropy from the **Guit
 
 ## Environmental and Hardware Harvesters
 Beyond the guitar integration, NullMagnet continuously aggregates noise from a wide array of local sensors and system states:
-* **Hardware and OS:** TRNG, system CPU and memory state, and mouse/HID timing jitter.
+* **Hardware and OS:** TRNG, system CPU and memory state, mouse/HID timing jitter, and highly parallel GPU memory race conditions. (CUDA/OpenCL)
 * **Environmental:** Microphone ADC noise and camera frame noise.
 * **Signals:** WiFi interface statistics, USB serial noise, Bluetooth passive scheduling jitter, and active BLE RSSI scanning.
 
