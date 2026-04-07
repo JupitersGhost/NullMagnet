@@ -1,0 +1,107 @@
+[package]
+name = "nullmagnet-live"
+version = "2.0.0"
+edition = "2021"
+description = "NullMagnet Live v2 - NIST SP 800-90B entropy harvesting with PQC key generation"
+authors = ["Jupiter Labs"]
+
+[[bin]]
+name = "nullmagnet-live"
+path = "src/main.rs"
+
+[features]
+default = []
+# GPU entropy harvesting (enable one or both — tracked independently)
+gpu-cuda = ["cudarc"]
+gpu-opencl = ["ocl"]
+gpu-all = ["gpu-cuda", "gpu-opencl"]
+# Bluetooth RSSI scanning (active BT entropy)
+bt-active = ["btleplug"]
+
+[dependencies]
+# ============================================================================
+# GUI — egui/eframe (replaces Tauri)
+# ============================================================================
+eframe = { version = "0.29", features = ["default"] }
+egui = "0.29"
+egui_plot = "0.29"
+
+# ============================================================================
+# CRYPTOGRAPHY — NIST approved algorithms
+# ============================================================================
+sha2 = "0.10"
+sha3 = "0.10"
+hmac = "0.12"
+
+# Post-Quantum Cryptography — FIPS 203/204 final standards
+ml-kem = "0.2"                # ML-KEM-1024 (FIPS 203 — replaces Kyber-512)
+pqcrypto-falcon = "0.3"       # Falcon-512 signatures (NIST round 3 winner)
+pqcrypto-traits = "0.3"
+
+# Vault encryption
+aes-gcm = "0.10"              # AES-256-GCM for local encrypted vault
+rand_core = "0.6"
+
+# Randomness
+rand = "0.8"
+getrandom = "0.2"
+
+# Encoding
+hex = "0.4"
+
+# Secret key zeroization — FIPS 140-3 requirement
+zeroize = { version = "1.7", features = ["derive"] }
+
+# ============================================================================
+# HARDWARE / SYSTEM ENTROPY SOURCES
+# ============================================================================
+cpal = "0.15"                  # Audio input (multi-device enumeration + capture)
+rdev = "0.5"                   # Mouse/keyboard events
+sysinfo = "0.30"               # System statistics (CPU, memory)
+nokhwa = { version = "0.10", features = ["input-native"] }  # Video/webcam
+
+# USB Serial entropy harvesting
+serialport = "4.3"
+
+# Bluetooth RSSI scanning (optional — active BT entropy)
+btleplug = { version = "0.11", optional = true }
+
+# ============================================================================
+# NETWORKING
+# ============================================================================
+reqwest = { version = "0.11", features = ["blocking", "json"] }
+
+# ============================================================================
+# CONCURRENCY
+# ============================================================================
+crossbeam-channel = "0.5"
+parking_lot = "0.12"
+
+# ============================================================================
+# CONFIG + SERIALIZATION
+# ============================================================================
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+toml = "0.8"
+chrono = "0.4"
+
+# ============================================================================
+# GPU SUPPORT — Optional
+# ============================================================================
+cudarc = { version = "0.11", optional = true, features = ["cuda-version-from-build-system"] }
+ocl = { version = "0.19", optional = true }
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+
+# ============================================================================
+# Build:
+#   Standard (no GPU):     cargo build --release
+#   NVIDIA only:           cargo build --release --features gpu-cuda
+#   AMD/Intel only:        cargo build --release --features gpu-opencl
+#   Dual GPU:              cargo build --release --features gpu-all
+#   With BT RSSI:          cargo build --release --features bt-active
+#   Everything:            cargo build --release --features "gpu-all,bt-active"
+# ============================================================================
