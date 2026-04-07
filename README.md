@@ -1,5 +1,7 @@
 # NullMagnet Live v2
 
+![NullMagnet Dashboard](assets/dashboard.png)
+
 **NullMagnet Live** is an experimental entropy harvesting engine and Post-Quantum Cryptography (PQC) key generator. It is designed to aggregate non-deterministic noise from various hardware sources to seed NIST-standardized PQC algorithms.
 
 > [!WARNING]
