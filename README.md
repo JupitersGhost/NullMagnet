@@ -20,7 +20,7 @@ Beyond the guitar integration, NullMagnet continuously aggregates noise from a w
 * **Signals:** WiFi interface statistics, USB serial noise, Bluetooth passive scheduling jitter, and active BLE RSSI scanning.
 
 ## Technical Architecture
-* **NIST SP 800-90B Compliance:** Implements Repetition Count Tests (RCT) and Adaptive Proportion Tests (APT) to monitor source health.
+* **NIST SP 800-90B Methodology:** Implements Repetition Count Tests (RCT) and Adaptive Proportion Tests (APT) to monitor source health.
 * **Conditioning:** Uses SHA-256 vetted conditioning (256 raw bytes to 32 bytes) with a conservative 0.85 entropy credit factor.
 * **PQC Standards:** Generates **ML-KEM-1024** (FIPS 203) key pairs and **Falcon-512** (NIST Round 3) signatures.
 * **Memory Safety:** Utilizes the `zeroize` crate to wipe secret key material from memory immediately after use.
@@ -31,6 +31,15 @@ NullMagnet includes a robust networking layer for distributed entropy sharing an
 * **P2P Mesh:** Nodes can distribute harvested entropy to each other, verified by HMAC-SHA256 authentication.
 * **Encrypted Vault:** Key bundles are encrypted locally using AES-256-GCM.
 * **Headscale Forwarding:** Encrypted key bundles can be pushed directly to remote vault nodes over a private tailnet.
+
+## Cryptographic Compliance Notice
+While NullMagnet strictly implements several core methodologies from NIST SP 800-90B (such as RCT/APT health tests, startup data discarding, and FIPS 140-3 zeroization practices), it is an experimental tool and is **not formally certified**. 
+
+If evaluated by an accredited NVLAP testing lab, the architecture would require formalization in the following areas:
+* **Offline Validation:** NullMagnet estimates min-entropy dynamically on the fly to monitor source health. Formal compliance requires capturing 1,000,000 sequential raw bytes and running them through the official `ea_non_iid` statistical suite offline to establish a static, mathematically proven baseline.
+* **Stochastic Modeling:** Generating formal mathematical stochastic models to prove the entropy rate of the physical chaos from the GuitaRNG (combining string vibration, ADC thermal noise, and timing jitter) is highly complex and not currently included.
+* **DRBG Construction:** The engine uses a custom SHA-3 counter-based construction to expand the entropy pool. Formal compliance requires a strictly approved Deterministic Random Bit Generator (like `Hash_DRBG` or `CTR_DRBG`) per NIST SP 800-90A.
+* **Conditioning Heuristics:** The engine uses a flat, conservative 0.85 multiplier for vetted SHA-256 conditioning, whereas strict certification requires a specific bounding formula based on the exact internal state size of the hash function.
 
 ## Build and Run Instructions
 
